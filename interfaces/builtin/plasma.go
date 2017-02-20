@@ -58,15 +58,8 @@ func (iface *PlasmaInterface) ConnectedSlotSnippet(plug *interfaces.Plug, slot *
 		return nil, nil
 	case interfaces.SecuritySecComp:
 		return nil, nil
-	case interfaces.SecurityDBus:
-		return nil, nil
-	case interfaces.SecurityUDev:
-		return nil, nil
-	case interfaces.SecurityMount:
-		return nil, nil
-	default:
-		return nil, interfaces.ErrUnknownSecurity
 	}
+	return nil, nil
 }
 
 // PermanentSlotSnippet returns security snippet permanently granted to hello slots.
@@ -76,15 +69,8 @@ func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securi
 		return nil, nil
 	case interfaces.SecuritySecComp:
 		return nil, nil
-	case interfaces.SecurityDBus:
-		return nil, nil
-	case interfaces.SecurityUDev:
-		return nil, nil
-	case interfaces.SecurityMount:
-		return nil, nil
-	default:
-		return nil, interfaces.ErrUnknownSecurity
 	}
+	return nil, nil
 }
 
 // ConnectedPlugSnippet returns security snippet specific to a given connection between the hello plug and some slot.
@@ -94,15 +80,8 @@ func (iface *PlasmaInterface) ConnectedPlugSnippet(plug *interfaces.Plug, slot *
 		return nil, nil
 	case interfaces.SecuritySecComp:
 		return nil, nil
-	case interfaces.SecurityDBus:
-		return nil, nil
-	case interfaces.SecurityUDev:
-		return nil, nil
-	case interfaces.SecurityMount:
-		return nil, nil
-	default:
-		return nil, interfaces.ErrUnknownSecurity
 	}
+	return nil, nil
 }
 
 // PermanentPlugSnippet returns the configuration snippet required to use a hello interface.
@@ -112,15 +91,8 @@ func (iface *PlasmaInterface) PermanentPlugSnippet(plug *interfaces.Plug, securi
 		return nil, nil
 	case interfaces.SecuritySecComp:
 		return nil, nil
-	case interfaces.SecurityDBus:
-		return nil, nil
-	case interfaces.SecurityUDev:
-		return nil, nil
-	case interfaces.SecurityMount:
-		return nil, nil
-	default:
-		return nil, interfaces.ErrUnknownSecurity
 	}
+	return nil, nil
 }
 
 // AutoConnect returns true if plugs and slots should be implicitly
