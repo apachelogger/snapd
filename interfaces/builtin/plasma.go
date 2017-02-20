@@ -20,10 +20,26 @@
 package builtin
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/snapcore/snapd/interfaces"
+	"github.com/snapcore/snapd/release"
 )
+
+const plasmaConnectedPlugAppArmor = `
+# Description: Can query UPower for power devices, history and statistics.
+
+#include <abstractions/dbus-strict>
+
+# Find all devices monitored by UPower
+dbus (send)
+    bus=system
+    path=/org/freedesktop/UPower
+    interface=org.freedesktop.UPower
+    member=EnumerateDevices
+    peer=(label=###SLOT_SECURITY_TAGS###),
+`
 
 // PlasmaInterface is the hello interface for a tutorial.
 type PlasmaInterface struct{}
@@ -75,11 +91,17 @@ func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securi
 
 // ConnectedPlugSnippet returns security snippet specific to a given connection between the hello plug and some slot.
 func (iface *PlasmaInterface) ConnectedPlugSnippet(plug *interfaces.Plug, slot *interfaces.Slot, securitySystem interfaces.SecuritySystem) ([]byte, error) {
+	fmt.Sprintf("plasma got ConnectedPlugSnippet")
 	switch securitySystem {
 	case interfaces.SecurityAppArmor:
-		return nil, nil
-	case interfaces.SecuritySecComp:
-		return nil, nil
+		old := []byte("###SLOT_SECURITY_TAGS###")
+		new := slotAppLabelExpr(slot)
+		if release.OnClassic {
+			// Let confined apps access unconfined upower on classic
+			new = []byte("unconfined")
+		}
+		snippet := bytes.Replace([]byte(plasmaConnectedPlugAppArmor), old, new, -1)
+		return snippet, nil
 	}
 	return nil, nil
 }
