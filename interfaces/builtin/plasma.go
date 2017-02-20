@@ -41,7 +41,10 @@ const plasmaPermanentSlotDBus = `
 `
 
 const plasmaConnectedPlugAppArmor = `
-# Description: Can query UPower for power devices, history and statistics.
+# Description: Magic
+
+# TODO: why?
+/sys/devices/*/*/boot_vga r,
 
 #include <abstractions/dbus-strict>
 
@@ -51,6 +54,22 @@ dbus (send)
     interface=org.freedesktop.DBus
     member=ListNames
     peer=(name="org.freedesktop.DBus", label="unconfined"),
+
+# KWin manages session activity and uses login1 to use devices.
+dbus (send)
+    bus=system
+    path=/org/freedesktop/login1{,/**}
+    interface=org.freedesktop.login1.Manager
+    member=GetSession,
+dbus (send)
+    bus=system
+    path=/org/freedesktop/login1/session/*
+    interface=org.freedesktop.login1.Session
+    member={Activate,TakeControl,TakeDevice,ReleaseDevice},
+`
+
+const plasmaConnectedPlugSecComp = `
+ptrace
 `
 
 // PlasmaInterface is the hello interface for a tutorial.
@@ -108,6 +127,8 @@ func (iface *PlasmaInterface) ConnectedPlugSnippet(plug *interfaces.Plug, slot *
 		new := slotAppLabelExpr(slot)
 		snippet := bytes.Replace([]byte(plasmaConnectedPlugAppArmor), old, new, -1)
 		return snippet, nil
+	case interfaces.SecuritySecComp:
+		return []byte(plasmaConnectedPlugSecComp), nil
 	}
 	return nil, nil
 }
