@@ -24,7 +24,6 @@ import (
 	"fmt"
 
 	"github.com/snapcore/snapd/interfaces"
-	"github.com/snapcore/snapd/release"
 )
 
 const plasmaConnectedPlugAppArmor = `
@@ -91,15 +90,11 @@ func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securi
 
 // ConnectedPlugSnippet returns security snippet specific to a given connection between the hello plug and some slot.
 func (iface *PlasmaInterface) ConnectedPlugSnippet(plug *interfaces.Plug, slot *interfaces.Slot, securitySystem interfaces.SecuritySystem) ([]byte, error) {
-	fmt.Sprintf("plasma got ConnectedPlugSnippet")
+	fmt.Println("plasma got ConnectedPlugSnippet")
 	switch securitySystem {
 	case interfaces.SecurityAppArmor:
 		old := []byte("###SLOT_SECURITY_TAGS###")
 		new := slotAppLabelExpr(slot)
-		if release.OnClassic {
-			// Let confined apps access unconfined upower on classic
-			new = []byte("unconfined")
-		}
 		snippet := bytes.Replace([]byte(plasmaConnectedPlugAppArmor), old, new, -1)
 		return snippet, nil
 	}
