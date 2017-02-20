@@ -36,7 +36,8 @@ const plasmaPermanentSlotDBus = `
 const plasmaConnectedPlugAppArmor = `
 # Description: Can query UPower for power devices, history and statistics.
 
-#include <abstractions/dbus-strict>
+#include <abstractions/dbus>
+#include <abstractions/dbus-session>
 
 dbus (send)
     bus=system
