@@ -45,9 +45,6 @@ const plasmaConnectedPlugAppArmor = `
 
 #include <abstractions/dbus-strict>
 
-dbus (send, receive) bus=system dest=org.freedesktop.DBus,
-
-
 dbus (receive, send)
     bus=system
     path=/org/freedesktop/DBus
