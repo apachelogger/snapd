@@ -362,6 +362,7 @@ slots:
     allow-installation:
       slot-snap-type:
         - app
+        - core
   modem-manager:
     allow-installation:
       slot-snap-type:

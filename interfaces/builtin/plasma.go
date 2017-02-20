@@ -41,6 +41,19 @@ dbus (send)
 
 dbus (send)
     bus=system
+    path=/
+    interface=org.freedesktop.DBus
+    member=ListNames
+    peer=(label="unconfined"),
+
+dbus (send)
+    bus=system
+    path=/
+    interface=org.freedesktop.DBus
+    member=ListNames,
+
+dbus (send)
+    bus=system
     path=/meter
     interface=org.freedesktop.DBus
     member=ListNames
