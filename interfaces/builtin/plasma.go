@@ -57,7 +57,15 @@ dbus (send)
     path=/
     interface=org.freedesktop.DBus
     member=ListNames
+    name=org.freedesktop.DBus
     peer=(label="unconfined"),
+
+dbus (send)
+    bus=system
+    path=/
+    interface=org.freedesktop.DBus
+    member=ListNames
+    name=org.freedesktop.DBus,
 
 dbus (send)
     bus=system
