@@ -40,16 +40,38 @@ const plasmaPermanentSlotDBus = `
 </policy>
 `
 
+// FIXME: we are basically the wrong way around here. the slot should have these
+// abilities, the plug shouldn't hue hue
 const plasmaConnectedPlugAppArmor = `
 # Description: Magic
 
 # TODO: why?
 /sys/devices/*/*/boot_vga r,
 
+# Possibly restrict this more. KWin diables tracing on itself.
+ptrace (trace),
+
+# xwayland socket
+# bind cannot be used with peer QQ
+unix (connect, receive, send, bind, listen)
+     type=stream,
+#     peer=(addr="@/tmp/.X11-unix/*"),
+
+# kcrash checks pattern
+/proc/sys/kernel/core_pattern r,
+
+# krunner iterates this for some reason
+# TODO: figure out why
+/etc/fstab r,
+/sys/bus/*/devices/{,*} r,
+/run/udev/data/{,*} r,
+
 #include <abstractions/dbus-strict>
 
+# Used in various places to check if a thing is registered before calling it.
+# Most importantly used in kwin before beginning to talk to login1
 dbus (send)
-    bus=system
+    bus={system,session}
     path=/
     interface=org.freedesktop.DBus
     member=ListNames
@@ -60,16 +82,48 @@ dbus (send)
     bus=system
     path=/org/freedesktop/login1{,/**}
     interface=org.freedesktop.login1.Manager
-    member=GetSession,
+    member={GetSession,GetSessionByPID}
+    peer=(name=org.freedesktop.login1),
 dbus (send)
     bus=system
     path=/org/freedesktop/login1/session/*
     interface=org.freedesktop.login1.Session
-    member={Activate,TakeControl,TakeDevice,ReleaseDevice},
-`
+    member={Activate,TakeControl,TakeDevice,ReleaseDevice,PauseDevice}
+    peer=(name=org.freedesktop.login1),
+dbus (send)
+    bus=system
+    path=/org/freedesktop/login1/session/*
+    interface=org.freedesktop.DBus.Properties
+    member=Get{,All}
+    peer=(name=org.freedesktop.login1),
 
-const plasmaConnectedPlugSecComp = `
-ptrace
+# Introspection through solid. This is used in plugable tech.
+# TODO: why does the udisks2 plug not allow this?
+dbus (send)
+    bus=system
+    path=/org/freedesktop/UDisks2/{block_devices,drives}
+    interface=org.freedesktop.DBus.Introspectable
+    member=Introspect
+    peer=(name=org.freedesktop.UDisks2),
+dbus (send)
+    bus=system
+    path=/org/freedesktop/UDisks2/{block_devices,drives}/*
+    interface=org.freedesktop.DBus.Properties
+    member=Get{,All}
+    peer=(name=org.freedesktop.UDisks2),
+dbus (send)
+    bus=system
+    path=/org/freedesktop/UDisks2/{block_devices,drives}/*
+    interface=org.freedesktop.DBus.Introspectable
+    member=Introspect
+    peer=(name=org.freedesktop.UDisks2),
+# TODO: upower plug also seems a bit meh
+dbus (send)
+    bus=system
+    path=/org/freedesktop/UPower
+    interface=org.freedesktop.DBus.Introspectable
+    member=Introspect
+    peer=(name=org.freedesktop.UPower,label=unconfined),
 `
 
 // PlasmaInterface is the hello interface for a tutorial.
@@ -127,8 +181,6 @@ func (iface *PlasmaInterface) ConnectedPlugSnippet(plug *interfaces.Plug, slot *
 		new := slotAppLabelExpr(slot)
 		snippet := bytes.Replace([]byte(plasmaConnectedPlugAppArmor), old, new, -1)
 		return snippet, nil
-	case interfaces.SecuritySecComp:
-		return []byte(plasmaConnectedPlugSecComp), nil
 	}
 	return nil, nil
 }
@@ -139,7 +191,7 @@ func (iface *PlasmaInterface) PermanentPlugSnippet(plug *interfaces.Plug, securi
 	case interfaces.SecurityAppArmor:
 		return nil, nil
 	case interfaces.SecuritySecComp:
-		return nil, nil
+		return []byte(`bind`), nil
 	}
 	return nil, nil
 }
