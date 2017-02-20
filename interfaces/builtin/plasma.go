@@ -38,7 +38,13 @@ const plasmaConnectedPlugAppArmor = `
 
 #include <abstractions/dbus-strict>
 
-# Find all devices monitored by UPower
+dbus (send)
+    bus=system
+    path=/org/freedesktop/DBus
+    interface=org.freedesktop.DBus
+    member=ListNames
+    peer=(name="org.freedesktop.DBus", label="unconfined"),
+
 dbus (send)
     bus=system
     path=/
