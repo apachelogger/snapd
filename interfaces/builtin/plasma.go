@@ -43,52 +43,9 @@ const plasmaPermanentSlotDBus = `
 const plasmaConnectedPlugAppArmor = `
 # Description: Can query UPower for power devices, history and statistics.
 
-#include <abstractions/dbus-strict>
+#include <abstractions/dbus>
 
 dbus (send, receive) bus=system dest=org.freedesktop.DBus,
-
-
-dbus (receive, send)
-    bus=system
-    path=/org/freedesktop/DBus
-    interface=org.freedesktop.DBus
-    member=ListNames
-    peer=(name="org.freedesktop.DBus", label="unconfined"),
-
-dbus (receive, send)
-    bus=system
-    path=/
-    interface=org.freedesktop.DBus
-    member=ListNames
-    peer=(name="org.freedesktop.DBus", label="unconfined"),
-
-dbus (receive, send)
-    bus=system
-    path=/
-    interface=org.freedesktop.DBus
-    member=ListNames
-    name=org.freedesktop.DBus
-    peer=(label="unconfined"),
-
-dbus (receive, send)
-    bus=system
-    path=/
-    interface=org.freedesktop.DBus
-    member=ListNames
-    name=org.freedesktop.DBus,
-
-dbus (receive, send)
-    bus=system
-    path=/
-    interface=org.freedesktop.DBus
-    member=ListNames,
-
-dbus (receive, send)
-    bus=system
-    path=/meter
-    interface=org.freedesktop.DBus
-    member=ListNames
-    peer=(name="org.freedesktop.DBus", label="unconfined"),
 `
 
 // PlasmaInterface is the hello interface for a tutorial.
