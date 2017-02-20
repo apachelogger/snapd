@@ -72,7 +72,7 @@ unix (connect, receive, send, bind, listen)
 # Most importantly used in kwin before beginning to talk to login1
 dbus (send)
     bus={system,session}
-    path=/
+    path={/,/org/freedesktop/DBus}
     interface=org.freedesktop.DBus
     member=ListNames
     peer=(name="org.freedesktop.DBus", label="unconfined"),
@@ -84,12 +84,12 @@ dbus (send)
     interface=org.freedesktop.login1.Manager
     member={GetSession,GetSessionByPID}
     peer=(name=org.freedesktop.login1),
-dbus (send)
+## Next rule can't be locked to peer becuase PauseDevice is weirdly shot against :1.0
+dbus (send, receive)
     bus=system
     path=/org/freedesktop/login1/session/*
     interface=org.freedesktop.login1.Session
-    member={Activate,TakeControl,TakeDevice,ReleaseDevice,PauseDevice}
-    peer=(name=org.freedesktop.login1),
+    member={Activate,TakeControl,TakeDevice,ReleaseDevice,PauseDevice},
 dbus (send)
     bus=system
     path=/org/freedesktop/login1/session/*
@@ -97,8 +97,28 @@ dbus (send)
     member=Get{,All}
     peer=(name=org.freedesktop.login1),
 
+# Powerdevil wants to inhibit
+dbus (send)
+    bus=system
+    path=/org/freedesktop/login1
+    interface=org.freedesktop.login1.Manager
+    member=Inhibit
+    peer=(name=org.freedesktop.login1),
+
 # Introspection through solid. This is used in plugable tech.
 # TODO: why does the udisks2 plug not allow this?
+dbus (send)
+    bus=system
+    path=/
+    interface=org.freedesktop.DBus.Introspectable
+    member=Introspect
+    peer=(name=org.freedesktop.UDisks2),
+dbus (send)
+    bus=system
+    path=/
+    interface=org.freedesktop.DBus.Properties
+    member=Get{,All}
+    peer=(name=org.freedesktop.UDisks2),
 dbus (send)
     bus=system
     path=/org/freedesktop/UDisks2/{block_devices,drives}
@@ -124,6 +144,19 @@ dbus (send)
     interface=org.freedesktop.DBus.Introspectable
     member=Introspect
     peer=(name=org.freedesktop.UPower,label=unconfined),
+
+# plasma-nm (&kded) allow full access more or less.
+dbus (send)
+    bus=system
+    path=/org/freedesktop/NetworkManager{,/**}
+    interface=org.freedesktop.DBus.Properties
+    member=Get{,All}
+    peer=(name=org.freedesktop.NetworkManager),
+dbus (send)
+    bus=system
+    path=/org/freedesktop/NetworkManager{,/**}
+    interface=org.freedesktop.NetworkManager{,.**}
+    peer=(name=org.freedesktop.NetworkManager),
 `
 
 // PlasmaInterface is the hello interface for a tutorial.
