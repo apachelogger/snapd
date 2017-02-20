@@ -26,6 +26,13 @@ import (
 	"github.com/snapcore/snapd/interfaces"
 )
 
+const plasmaPermanentSlotDBus = `
+<policy context="default">
+  <allow send_destination="org.freedesktop.DBus"
+         send_interface="org.freedesktop.DBus.ListNames"/>
+</policy>
+`
+
 const plasmaConnectedPlugAppArmor = `
 # Description: Can query UPower for power devices, history and statistics.
 
@@ -100,6 +107,8 @@ func (iface *PlasmaInterface) ConnectedSlotSnippet(plug *interfaces.Plug, slot *
 // PermanentSlotSnippet returns security snippet permanently granted to hello slots.
 func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securitySystem interfaces.SecuritySystem) ([]byte, error) {
 	switch securitySystem {
+	case interfaces.SecurityDBus:
+		return []byte(plasmaPermanentSlotDBus), nil
 	case interfaces.SecurityAppArmor:
 		return nil, nil
 	case interfaces.SecuritySecComp:
