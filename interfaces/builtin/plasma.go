@@ -45,6 +45,9 @@ const plasmaConnectedPlugAppArmor = `
 
 #include <abstractions/dbus-strict>
 
+dbus (send, receive) bus=system dest=org.freedesktop.DBus,
+
+
 dbus (receive, send)
     bus=system
     path=/org/freedesktop/DBus
@@ -131,11 +134,6 @@ func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securi
 	switch securitySystem {
 	case interfaces.SecurityDBus:
 		return []byte(plasmaPermanentSlotDBus), nil
-	case interfaces.SecurityAppArmor:
-		old := []byte("###SLOT_SECURITY_TAGS###")
-		new := slotAppLabelExpr(slot)
-		snippet := bytes.Replace([]byte(plasmaConnectedPlugAppArmor), old, new, -1)
-		return snippet, nil
 	}
 	return nil, nil
 }
