@@ -99,7 +99,7 @@ func (iface *PlasmaInterface) PermanentPlugSnippet(plug *interfaces.Plug, securi
 // auto-connected when an unambiguous connection candidate is available.
 //
 // This interface does not auto-connect.
-func (iface *PlasmaInterface) AutoConnect() bool {
+func (iface *PlasmaInterface) AutoConnect(*interfaces.Plug, *interfaces.Slot) bool {
 	return false
 }
 
