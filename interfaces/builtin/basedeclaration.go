@@ -358,6 +358,10 @@ slots:
       slot-snap-type:
         - app
     deny-connection: true
+  plasma:
+    allow-installation:
+      slot-snap-type:
+        - app
   modem-manager:
     allow-installation:
       slot-snap-type:
