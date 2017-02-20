@@ -26,6 +26,13 @@ import (
 	"github.com/snapcore/snapd/interfaces"
 )
 
+const plasmaConnectedSlotAppArmor = `
+# Description: Can query UPower for power devices, history and statistics.
+
+#include <abstractions/dbus>
+#include <abstractions/dbus-session>
+`
+
 const plasmaPermanentSlotDBus = `
 <policy context="default">
   <allow send_destination="org.freedesktop.DBus"
@@ -112,9 +119,10 @@ func (iface *PlasmaInterface) SanitizePlug(plug *interfaces.Plug) error {
 func (iface *PlasmaInterface) ConnectedSlotSnippet(plug *interfaces.Plug, slot *interfaces.Slot, securitySystem interfaces.SecuritySystem) ([]byte, error) {
 	switch securitySystem {
 	case interfaces.SecurityAppArmor:
-		return nil, nil
-	case interfaces.SecuritySecComp:
-		return nil, nil
+		old := []byte("###SLOT_SECURITY_TAGS###")
+		new := slotAppLabelExpr(slot)
+		snippet := bytes.Replace([]byte(plasmaConnectedSlotAppArmor), old, new, -1)
+		return snippet, nil
 	}
 	return nil, nil
 }
@@ -125,8 +133,6 @@ func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securi
 	case interfaces.SecurityDBus:
 		return []byte(plasmaPermanentSlotDBus), nil
 	case interfaces.SecurityAppArmor:
-		return nil, nil
-	case interfaces.SecuritySecComp:
 		return nil, nil
 	}
 	return nil, nil
