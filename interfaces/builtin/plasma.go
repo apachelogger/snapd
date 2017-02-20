@@ -43,8 +43,15 @@ const plasmaPermanentSlotDBus = `
 const plasmaConnectedPlugAppArmor = `
 # Description: Can query UPower for power devices, history and statistics.
 
-#include <abstractions/dbus>
-#include <abstractions/dbus-session>
+#include <abstractions/dbus-strict>
+
+dbus (receive, send)
+    bus=system
+    peer=(label=###SLOT_SECURITY_TAGS###),
+
+dbus (send)
+    bus=system
+    peer=(name=org.freedesktop.DBus, label=unconfined),
 
 dbus (send)
     bus=system
