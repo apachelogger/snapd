@@ -130,3 +130,7 @@ func (iface *PlasmaInterface) PermanentPlugSnippet(plug *interfaces.Plug, securi
 func (iface *PlasmaInterface) AutoConnect() bool {
 	return false
 }
+
+func init() {
+	allInterfaces = append(allInterfaces, &PlasmaInterface{})
+}
