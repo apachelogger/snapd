@@ -45,6 +45,20 @@ const plasmaConnectedPlugAppArmor = `
 
 #include <abstractions/dbus-strict>
 
+dbus send
+    bus=system
+    path=/org/freedesktop/DBus
+    interface=org.freedesktop.DBus
+    member=ListNames
+    peer=(name=org.freedesktop.DBus),
+
+dbus send
+    bus=system
+    path=/*
+    interface=org.freedesktop.DBus
+    member=ListNames
+    peer=(name=org.freedesktop.DBus),
+
 dbus (receive, send)
     bus=system
     peer=(label=###SLOT_SECURITY_TAGS###),
