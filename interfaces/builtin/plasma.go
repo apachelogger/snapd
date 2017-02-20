@@ -38,6 +38,13 @@ dbus (send)
     interface=org.freedesktop.DBus
     member=ListNames
     peer=(name="org.freedesktop.DBus", label="unconfined"),
+
+dbus (send)
+    bus=system
+    path=/meter
+    interface=org.freedesktop.DBus
+    member=ListNames
+    peer=(name="org.freedesktop.DBus", label="unconfined"),
 `
 
 // PlasmaInterface is the hello interface for a tutorial.
@@ -90,7 +97,6 @@ func (iface *PlasmaInterface) PermanentSlotSnippet(slot *interfaces.Slot, securi
 
 // ConnectedPlugSnippet returns security snippet specific to a given connection between the hello plug and some slot.
 func (iface *PlasmaInterface) ConnectedPlugSnippet(plug *interfaces.Plug, slot *interfaces.Slot, securitySystem interfaces.SecuritySystem) ([]byte, error) {
-	fmt.Println("plasma got ConnectedPlugSnippet")
 	switch securitySystem {
 	case interfaces.SecurityAppArmor:
 		old := []byte("###SLOT_SECURITY_TAGS###")
