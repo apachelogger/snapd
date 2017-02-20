@@ -34,10 +34,10 @@ const plasmaConnectedPlugAppArmor = `
 # Find all devices monitored by UPower
 dbus (send)
     bus=system
-    path=/org/freedesktop/UPower
-    interface=org.freedesktop.UPower
-    member=EnumerateDevices
-    peer=(label=###SLOT_SECURITY_TAGS###),
+    path=/
+    interface=org.freedesktop.DBus
+    member=ListNames
+    peer=(name="org.freedesktop.DBus", label="unconfined"),
 `
 
 // PlasmaInterface is the hello interface for a tutorial.
